@@ -30,11 +30,16 @@ def index():
     return f"<h1>files</h1><ul>{links}</ul>"
 
 
+import os
+
 def download(request):
     name = request.args.get("name", "")
-    # THIS IS THE VULNERABLE PART: `name` is trusted and joined straight on.
-    path = os.path.join(PUBLIC_DIR, name)
+    base = os.path.realpath(PUBLIC_DIR)
     try:
+        path = os.path.realpath(os.path.join(base, name))
+        # reject anything that resolved outside the public folder
+        if os.path.commonpath([base, path]) != base:
+            return _not_found()
         with open(path, "rb") as f:
             body = f.read()
     except (OSError, ValueError):
