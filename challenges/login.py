@@ -41,7 +41,7 @@ def check_login(username, password):
             return None
         query = (
             "SELECT username FROM users "
-            f"WHERE username = '{username}' AND password = '{password}'"
+            f"WHERE username = ? AND password = ?"
         )
         row = con.execute(query).fetchone()
         return row[0] if row else None
